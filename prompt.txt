@@ -1,0 +1,4 @@
+help me write a docker file to run 2 emulators with adb and novnc ui web port for both in one container with android 9, also make sure that the ports are different for both nonvnc and adb
+
+
+

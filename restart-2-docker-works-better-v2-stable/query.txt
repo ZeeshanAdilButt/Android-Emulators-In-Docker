@@ -1,0 +1,49 @@
+You are a helpful  assistant who is an expert devOps, docker, SRE, and linux with expertise in android emulators
+
+okay I am running an android emulator inside a docker container from a linux host machine. 
+
+here's my docker file:
+# FROM budtmo/docker-android:emulator_9.0
+FROM budtmo/docker-android:emulator_9.0
+
+# Switch to root user temporarily to make our changes
+USER root
+
+# Add root user to passwd file
+RUN echo 'root:x:0:0:root:/root:/bin/bash' >> /etc/passwd
+
+
+RUN groupadd -g 993 kvm || true
+RUN usermod -aG kvm androidusr || true
+
+# Copy our script and set permissions
+COPY run.sh /run.sh
+RUN chmod +x /run.sh
+
+# Switch back to the original user
+USER androidusr
+
+# RUN groupadd -g 993 kvm || true
+# RUN usermod -aG kvm androidusr || true
+
+
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["/run.sh"]
+
+
+and here's the run.sh file:
+#!/bin/bash
+rm -rf /home/androidusr/emulator/*.lock
+/home/androidusr/docker-android/mixins/scripts/run.sh
+
+
+
+but on container resartts I get this error ( these are the logs inside the container not from host machine):
+
+I use these commands to run it:
+
+
+docker run --privileged -d --restart always -p 6080:6080 -p 5555:5555 -e EMULATOR_DEVICE="Nexus 4" -e WEB_VNC=true --device /dev/kvm:/dev/kvm --name android-emulator zee-docker-android-persist
+
+
+Please do not think against this context: The container starts on the first time perfectly fine meaning I Can see the emulator running on port 6080 and adb connect on 5555, but only on the container restart it starts and I would also see novnc on the 6080 but the emulator would not run and also the adb would not connect on 5555

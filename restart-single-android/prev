@@ -1,0 +1,11 @@
+What to Do Next
+On your host, move your current emulator data (currently bound from C:\docker\android\android\avd or wherever) into a subfolder:
+For example, create:
+C:\docker\android\avd\nexus_5_9.0.avd
+Move all the files (config.ini, system.img.qcow2, userdata, etc.) into that folder.
+Edit your nexus_5_9.0.ini (in your host folder bound at /home/androidusr/.android/avd) so that its path= entry points to:
+swift
+Copy
+/home/androidusr/.android/avd/nexus_5_9.0.avd
+Remove the old binding for /home/androidusr/emulator from your docker run command (or update your Docker Compose file accordingly) so that the emulator uses the data from the standard location.
+Restart your container.

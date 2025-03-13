@@ -1,0 +1,60 @@
+
+sdkmanager --list_installed
+
+Look for entries like:
+system-images;android-28;google_apis;x86_64
+
+avdmanager create avd -n Nexus_4 -k "system-images;android-28;google_apis;x86_64" -d "Nexus 4"
+
+sdkmanager --list_installed | grep "system-images;android-28;google_apis;x86_64"
+
+
+avdmanager list avd
+
+
++++++++++++++++++++++++
+
+pre debugging steps:
+
+# Option 1: Use the numeric user ID for root (0) instead of the name
+docker exec -it -u 0 device-0-android-cluster sh
+
+# Option 2: If that doesn't work, you might need to rebuild the container with proper user setup
+# Example Dockerfile addition:
+FROM your-base-image
+RUN mkdir /etc/passwd && echo "root:x:0:0:root:/root:/bin/sh" > /etc/passwd
+
+
+++++++++++++++++++++++++++++++++++++++++
+
+finding supervisor
+
+# First, let's find the correct supervisor socket
+find / -name "supervisor.sock" 2>/dev/null
+
+# Check the actual config files being used
+ls -l /home/androidusr/docker-android/mixins/configs/process/
+
+# Look at the content of one config to understand the setup
+cat /home/androidusr/docker-android/mixins/configs/process/supervisord-base.conf
+
+
++++++++++++++++++++++++++++++
+
+root cause
+
+Root Cause:
+
+Permission Issues:
+
+
+The /dev/kvm device has incorrect permissions: crw------- 1 0 root 10, 232
+The container failed to change KVM permissions with error: sudo: unknown user: root
+The container process is running as androidusr but needs root access for KVM
+
+
+X11 Initialization Problems:
+
+
+Failed X11 directory creation: _XSERVTransmkdir: ERROR: euid != 0,directory /tmp/.X11-unix will not be created
+Display server contention: Server is already active for display 0

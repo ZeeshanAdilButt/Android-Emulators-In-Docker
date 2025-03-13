@@ -1,0 +1,26 @@
+# FROM budtmo/docker-android:emulator_9.0
+FROM budtmo/docker-android:emulator_9.0
+
+# Switch to root user temporarily to make our changes
+USER root
+
+# Add root user to passwd file
+RUN echo 'root:x:0:0:root:/root:/bin/bash' >> /etc/passwd
+
+
+# RUN groupadd -g 993 kvm || true
+# RUN usermod -aG kvm androidusr || true
+
+# Copy our script and set permissions
+COPY run.sh /run.sh
+RUN chmod +x /run.sh
+
+# Switch back to the original user
+USER androidusr
+
+# RUN groupadd -g 993 kvm || true
+# RUN usermod -aG kvm androidusr || true
+
+
+ENTRYPOINT ["/bin/bash", "-c"]
+CMD ["/run.sh"]

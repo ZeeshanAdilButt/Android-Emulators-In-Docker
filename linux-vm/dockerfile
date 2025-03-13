@@ -1,0 +1,27 @@
+FROM ubuntu:22.04
+
+# Install desktop environment and RDP server
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    xfce4 \
+    xfce4-goodies \
+    xrdp \
+    xorgxrdp \
+    firefox \
+    supervisor \
+    && apt-get clean
+
+# Configure XRDP
+RUN adduser xrdp ssl-cert
+RUN sed -i 's/3389/3390/g' /etc/xrdp/xrdp.ini
+RUN echo "startxfce4" > /etc/skel/.xsession
+
+# Create a user
+RUN useradd -m -p $(openssl passwd -1 password) myuser
+RUN cp /etc/skel/.xsession /home/myuser/.xsession
+RUN chown myuser:myuser /home/myuser/.xsession
+
+# Supervisord configuration
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE 3390
+CMD ["/usr/bin/supervisord"]

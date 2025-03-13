@@ -26,6 +26,8 @@ RUN apt-get update && apt-get install -y \
     libqt5widgets5 \
     libqt5gui5 \
     libqt5network5 \
+    novnc \
+    websockify \
     && apt-get clean
 
 RUN curl -sS https://dl.google.com/android/repository/${SDK_VERSION} -o /tmp/sdk.zip \
@@ -34,20 +36,16 @@ RUN curl -sS https://dl.google.com/android/repository/${SDK_VERSION} -o /tmp/sdk
     && mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest \
     && rm /tmp/sdk.zip
 
-# RUN apt-get update && apt-get install -y \
-# x11vnc \
-# xvfb
-
 RUN yes | sdkmanager --licenses \
     && yes | sdkmanager "platform-tools" \
         "platforms;android-${ANDROID_BUILD_VERSION}" \
         "build-tools;${ANDROID_TOOLS_VERSION}" \
         "system-images;android-${ANDROID_BUILD_VERSION};default;x86_64" \
         "emulator"
-        
+
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
-EXPOSE 5554
+EXPOSE 5554 5037 6080
 
-CMD ["adb", "-a", "-P", "5037", "server", "nodaemon", "/start.sh"]
+CMD ["bash", "-c", "x11vnc -create -forever -rfbport 5900 & websockify --web /usr/share/novnc/ 6080 localhost:5900 & adb -a -P 5037 server nodaemon"]

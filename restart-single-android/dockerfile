@@ -1,0 +1,28 @@
+FROM budtmo/docker-android:emulator_9.0
+
+USER root
+
+# Install sudo.
+RUN apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
+
+# Create the kvm group if it doesn't exist and add androidusr to it.
+RUN groupadd -r kvm || true
+RUN usermod -aG kvm androidusr || true
+
+# Create /var/log/supervisor and set its ownership to androidusr.
+RUN mkdir -p /var/log/supervisor && chown androidusr:androidusr /var/log/supervisor
+
+# (If /dev/kvm exists during build, attempt to fix its permissions.)
+RUN [ -e /dev/kvm ] && chown root:kvm /dev/kvm || true
+RUN [ -e /dev/kvm ] && chmod 660 /dev/kvm || true
+
+# Copy our custom startup script into /usr/local/bin (a writable directory).
+COPY fix_kvm_and_run.sh /usr/local/bin/fix_kvm_and_run.sh
+RUN chmod +x /usr/local/bin/fix_kvm_and_run.sh
+
+# Copy our custom supervisord config into /usr/local/etc.
+COPY supervisord.conf /usr/local/etc/supervisord.conf
+
+USER androidusr
+
+ENTRYPOINT ["/usr/local/bin/fix_kvm_and_run.sh"]

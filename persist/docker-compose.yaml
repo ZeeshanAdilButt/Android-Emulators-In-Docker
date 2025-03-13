@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  android-container:
+    build:
+      context: .
+    container_name: android-container
+    privileged: true
+    environment:
+      - EMULATOR_DEVICE=Nexus 4
+      - WEB_VNC=true
+      - WEB_LOG=true
+      - WEB_LOG_PORT=9000
+      # - VNC_PASSWORD=yRBLPq4h5bVAzDT83f6jQX
+      - ENV_LOG_PATH=/var/log/
+      # Adding Windows-specific environment variables
+      # - DOCKER_HOST_OS=windows
+    volumes:
+      - data:/home/androidusr
+      - root:/root
+    ports:
+      - "6080:6080"
+      - "9005:9000"
+    # Removing Linux-specific devices section
+    restart: always
+
+volumes:
+  data:
+  root:
