@@ -4,9 +4,35 @@
 
 # mkdir -p /opt/docker-android/docker && chmod -R 777 /opt/docker-android/docker && for i in {0..39}; do mkdir -p "/opt/docker-android/device-${i}-android-cluster" && chmod -R 777 "/opt/docker-android/device-${i}-android-cluster"; done
 
-
+#neccessary packages
 sudo apt install htop nmon glances nethogs iftop
 
+
+#install docker
+# Update package index
+sudo apt-get update
+
+# Install dependencies
+sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+
+# Add Docker's official GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+# Set up the stable repository
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+# Update package index again
+sudo apt-get update
+
+# Install Docker CE
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+
+# Start and enable Docker
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Verify installation
+sudo docker run hello-world
 
 #fresh start
 #remove all containers
