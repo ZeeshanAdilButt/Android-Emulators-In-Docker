@@ -4,13 +4,15 @@
 
 # mkdir -p /opt/docker-android/docker && chmod -R 777 /opt/docker-android/docker && for i in {0..39}; do mkdir -p "/opt/docker-android/device-${i}-android-cluster" && chmod -R 777 "/opt/docker-android/device-${i}-android-cluster"; done
 
+# Update package index
+sudo apt-get update
+
 #neccessary packages
 sudo apt install htop nmon glances nethogs iftop
 
 
 #install docker
-# Update package index
-sudo apt-get update
+
 
 # Install dependencies
 sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
