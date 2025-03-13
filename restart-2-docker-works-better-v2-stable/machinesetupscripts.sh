@@ -5,6 +5,8 @@
 # mkdir -p /opt/docker-android/docker && chmod -R 777 /opt/docker-android/docker && for i in {0..39}; do mkdir -p "/opt/docker-android/device-${i}-android-cluster" && chmod -R 777 "/opt/docker-android/device-${i}-android-cluster"; done
 
 
+sudo apt install htop nmon glances nethogs iftop
+
 
 #fresh start
 #remove all containers
