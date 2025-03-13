@@ -11,6 +11,32 @@ sudo apt-get update
 sudo apt install htop nmon glances nethogs iftop
 
 
+Swap size of 200gb
+
+# Check current swap configuration
+sudo swapon --show
+
+# Turn off any existing swap
+sudo swapoff -a
+
+# Create a 100GB swap file
+sudo fallocate -l 100G /swapfile
+# Alternative if fallocate doesn't work:
+# sudo dd if=/dev/zero of=/swapfile bs=1G count=100
+
+# Set correct permissions
+sudo chmod 600 /swapfile
+
+# Format as swap
+sudo mkswap /swapfile
+
+# Enable the swap
+sudo swapon /swapfile
+
+# Make it permanent (add to fstab)
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+
 #install docker
 
 
